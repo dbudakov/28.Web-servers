@@ -25,3 +25,23 @@
 * Cделанную работу нужно залить hub.docker.com, при этом content в otus.txt должен содержать в себе название Вашего репозитория hub.docker.com и только его
 * Базовое задание должно быть в образе с тегом latest, задание для продвинутых в образе с тегом advanced.
 * Самопроверка: docker run -p 80:80 your_account/your_repo:latest (или your_account/your_repo:advanced) - запустит nginx c выполненым заданием. сurl http://localhost/otus.txt - редирект(или ошибка) , открыв ту же страницу в браузере - увидим your_account/your_repo
+
+# Решение 
+```
+pid        /var/run/nginx.pid;
+events {}
+
+http {
+    server {
+	root /opt/;                                  # каталог содержащий нужный файл, otus.txt
+	if ($cookie_access = "secret") {             # проверка на cookie
+	break;                                       # если cookie удовлетворяет, прервать обработку перейти в location
+	}                                            # если cookie неудовлетворяет продолжить обработку, не переходя в location
+	add_header "Set-Cookie" "access=secret";     # добавление в заголовок значения cookie
+	return 302 /;                                # редирект на /, что вернет обработку запроса на server или location
+	location / {
+	}
+	
+}
+}
+```
